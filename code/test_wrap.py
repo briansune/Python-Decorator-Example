@@ -3,9 +3,9 @@ import logging
 from numpy import array
 
 # global variables
-l_cfgs_antenna = [[0, 1], [0]]
-l_cfgs_channel = [[11, 12, 13]]
-l_cfgs_power = [[0, 1, 2], [7]]
+l_cfgs_antenna = [[0, 1], [0], [1]]
+l_cfgs_channel = [[11, 12, 13], [25, 26]]
+l_cfgs_power = [[0, 1, 2], [7], [3, 4, 5]]
 
 l_antenna = []
 l_channel = []
@@ -15,11 +15,11 @@ l_power = []
 def timeCountWrapper(oFunction):
     def funcWrapper(*args, **kwargs):
         f_start_time = timeit.default_timer()
-        res = oFunction(*args, **kwargs)
+        l_res = oFunction(*args, **kwargs)
         f_stop_time = timeit.default_timer()
         logging.info('Total run time: {:.3f}'.format(f_stop_time - f_start_time))
-        l_res = array(res).flatten().tolist()
         return l_res
+
     return funcWrapper
 
 
@@ -44,9 +44,9 @@ def setupConfigsWrapper(oFunction):
             logging.info(l_antenna)
             logging.info(l_power)
             logging.info(l_channel)
-
-            l_res += oFunction(*args, **kwargs)
+            l_res.append(array(oFunction(*args, **kwargs)).flatten().tolist())
         return l_res
+
     return funcWrapper
 
 
@@ -58,6 +58,7 @@ def loopAntennaWrapper(oFunction):
             logging.info('run ANT# {}'.format(i))
             l_res_tmp += [oFunction(*args, **kwargs)]
         return l_res_tmp
+
     return funcWrapper
 
 
@@ -69,6 +70,7 @@ def loopPowerWrapper(oFunction):
             logging.info('run PWR# {}'.format(i))
             l_res_tmp += [oFunction(*args, **kwargs)]
         return l_res_tmp
+
     return funcWrapper2
 
 
@@ -80,4 +82,5 @@ def loopChannelWrapper(oFunction):
             logging.info('run CH# {}'.format(i))
             l_res_tmp += [oFunction(*args, **kwargs)]
         return l_res_tmp
+
     return funcWrapper3
